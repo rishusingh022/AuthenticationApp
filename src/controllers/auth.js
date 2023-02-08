@@ -7,25 +7,31 @@ const register = async (req, res) => {
   }
   catch(error){
     if(error instanceof HTTPError){
-      res.status(error.status).json(error);
+      res.status(400).json({
+        message: error.message,
+      });
     }
-    const err = new HTTPError('Something went wrong', 500);
-    res.status(err.status).json(err);
+    res.status(500).json({
+      message : 'Something went wrong',
+    });
   }
 };
 
 const login = async (req, res) => {
   try{
-    const { email, password } = req.body;
-    const result = await authServices.login(email, password);
-    res.status(result.status).json(result);
+    const { username, password } = req.body;
+    const result = await authServices.login(username, password);
+    res.status(200).json(result);
   }
   catch (error) {
     if(error instanceof HTTPError){
-      res.status(error.status).json(error);
+      res.status(400).json({
+        message: error.message,
+      });
     }
-    const err = new HTTPError('Something went wrong', 500);
-    res.status(err.status).json(err);
+    res.status(500).json({
+      message : 'Something went wrong',
+    });
   }
 };
 
@@ -33,14 +39,17 @@ const validateJwt = async (req, res) => {
   try{
     const { token } = req.body;
     const result = await authServices.validateJwt(token);
-    res.status(result.status).json(result);
+    res.status(200).json(result);
   }
   catch(error){
     if(error instanceof HTTPError){
-      res.status(error.status).json(error);
+      res.status(400).json({
+        message: error.message,
+      });
     }
-    const err = new HTTPError('Something went wrong', 500);
-    res.status(err.status).json(err);
+    res.status(500).json({
+      message : 'Something went wrong',
+    });
   }
 };
 
