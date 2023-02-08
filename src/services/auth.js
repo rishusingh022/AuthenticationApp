@@ -1,6 +1,7 @@
 const db = require('../../database/models');
 const { HTTPError } = require('../utils/errorHandler');
 const {encryptPassword} = require('../utils/encryptPassword');
+const jwt = require('jsonwebtoken');
 
 const register = async (user) => {
   try {
@@ -32,13 +33,32 @@ const login = async (username, password) => {
     if (hashPassword!==userRes.password) {
       throw new HTTPError('Invalid password', 401);
     }
-    return userRes;
+    const token = jwt.sign(userRes.dataValues,'secret');
+    return {...userRes.dataValues,token};
   } catch (error) {
     throw new HTTPError(error.message, 500);
   }
 };
+const validateJwt = async (token) => {
+  const decodedToken = jwt.verify(token, 'secret');
+  const userRes = await db.Users.findOne({
+    where: {
+      username : decodedToken.username,
+    },
+  });
+  if(!userRes){
+    return {
+      message : 'User not found',
+    };
+  }
+  return {
+    message : 'Valid token',
+    data : userRes.username
+  };
+};
 module.exports = {
   register,
   login,
+  validateJwt,
 };
 

@@ -39,16 +39,19 @@ const validateJwt = async (req, res) => {
   try{
     const { token } = req.body;
     const result = await authServices.validateJwt(token);
-    res.status(200).json(result);
-  }
-  catch(error){
-    if(error instanceof HTTPError){
-      res.status(400).json({
-        message: error.message,
+    if(result.message==='User not found'){
+      res.status(404).json({
+        message: 'User not found',
       });
     }
-    res.status(500).json({
-      message : 'Something went wrong',
+    return res.status(200).json({
+      message: 'User verified',
+      data: result.data
+    });
+  }
+  catch (error) {
+    return res.status(401).json({
+      message: 'Invalid token'
     });
   }
 };
